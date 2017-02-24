@@ -15,7 +15,9 @@ feature 'restaurants' do
 
     context 'restaurants have been added' do
       before do
-          Restaurant.create(name: 'KFC')
+          signup
+          # Restaurant.create(name: 'KFC')
+          create_restaurant(name="KFC")
       end
 
       scenario 'display restaurants' do
@@ -51,9 +53,10 @@ feature 'restaurants' do
     end
 
     context 'editing restaurants' do #
-      before { Restaurant.create name: 'KFC', description: 'Deep fried goodness', id: 1 }
+      # before { Restaurant.create name: 'KFC', description: 'Deep fried goodness', id: 1 }
       scenario 'let the user edit a restaurant' do
         visit '/restaurants'
+        create_restaurant(name="KFC")
         click_link 'Edit KFC'
         fill_in 'Name', with: 'Kentucky Fried Chicken'
         fill_in 'Description', with: 'Deep fried goodness'
@@ -61,13 +64,14 @@ feature 'restaurants' do
         click_link 'Kentucky Fried Chicken'
         expect(page).to have_content 'Kentucky Fried Chicken'
         expect(page).to have_content 'Deep fried goodness'
-        expect(current_path).to eq "/restaurants/1"
       end
     end
 
     context 'deleting restaurants' do #
+
       scenario 'removes the restaurant when the user clicks a delete link' do
-        Restaurant.create(name: 'KFC', description: 'Deep fried goodness')
+        # Restaurant.create(name: 'KFC', description: 'Deep fried goodness'
+        create_restaurant(name="KFC")
         visit '/restaurants'
         click_link 'Delete KFC'
         expect(page).not_to have_content 'KFC'
@@ -81,18 +85,14 @@ feature 'restaurants' do
         click_button 'Create restaurant'
         click_link 'Sign out'
         signup(email: 'jerry@example.com', password: 'testagain', password_confirmation: 'testagain')
-        click_link 'Delete KFC'
-        expect(page).to have_content 'KFC'
-        expect(page).to have_content 'Restaurant cannot be deleted'
+        expect(page).not_to have_content 'Delete KFC'
       end
     end
 
     context 'creating restaurants' do #
       scenario 'prompt the user to fill out a form, then display the restaurant' do
         visit '/restaurants'
-        click_link 'Add a restaurant'
-        fill_in 'Name', with: 'KFC'
-        click_button 'Create restaurant'
+        create_restaurant(name="KFC")
         expect(page).to have_content 'KFC'
         expect(current_path).to eq '/restaurants'
       end
